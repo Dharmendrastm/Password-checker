@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Complexity Checker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Password Complexity Checker</h1>
+    <input type="password" id="passwordInput" placeholder="Enter Password" />
+    <div id="feedback">Password Strength: </div>
+    <button id="checkButton">Check Strength</button>
+  </div>
+
+  <script>
+    document.getElementById('checkButton').addEventListener('click', async () => {
+      const password = document.getElementById('passwordInput').value;
+
+      const response = await fetch('/check_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const result = await response.json();
+      let feedback = `Password Strength: ${result.strength}<br>`;
+
+      for (const [criterion, met] of Object.entries(result.criteria)) {
+        feedback += `${criterion}: ${met ? '✔' : '✖'}<br>`;
+      }
+
+      document.getElementById('feedback').innerHTML = feedback;
+    });
+  </script>
+</body>
+</html>
